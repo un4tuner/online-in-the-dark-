@@ -24,7 +24,7 @@ import { ref } from 'vue';
 import GameOptions from '../modals/modal-content/GameOptionsModal.vue';
 
 const currentSheet = ref('Playbooks');
-const sheets = ['Playbooks', 'Crew', 'score']; // TODO get this from JSON from the game state
+const sheets = ['Playbooks', 'Crew', 'World']; // TODO get this from JSON from the game state
 
 function onClickGameOptions() {
   ModalController.open(GameOptions);

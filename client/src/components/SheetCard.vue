@@ -14,11 +14,10 @@
 import sheetImages from '@/assets/data/sheet-images.json';
 import { Character } from '@/game-data/sheets/character-sheet';
 import { Crew } from '@/game-data/sheets/crew-sheet';
-import { Score } from '@/game-data/sheets/score-sheet'; 
 import { PropType, computed } from 'vue';
 const props = defineProps({
   sheet: {
-    type: Object as PropType<Crew | Character | Score>,
+    type: Object as PropType<Crew | Character>,
     required: true
   }
 });
@@ -31,14 +30,10 @@ function getSubtitle() {
   if (props.sheet.sheetType === 'crew') {
     const crewSheet = props.sheet as Crew;
     return `Tier ${crewSheet.tier} ❖ ${crewSheet.crewType}`;
-  } else if (props.sheet.sheetType === 'character') {
+  } else {
     const characterSheet = props.sheet as Character;
     return `${characterSheet.characterType}`;
-  } else if (props.sheet.sheetType === 'score') {
-    const scoreSheet = props.sheet as Score;
-    return `${scoreSheet.scoreType} ❖ Tier ${scoreSheet.tierLevel}`;
   }
-  return '';
 }
 </script>
 

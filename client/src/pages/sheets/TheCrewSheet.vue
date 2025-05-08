@@ -53,7 +53,7 @@
               id="crew-description"
               :value="props.sheet.description"
               @focus="focus = 'description'"
-              placeholder="A group of scoundrels scraping by in the underscore"
+              placeholder="A group of scoundrels scraping by in the underworld"
               @change="
                 changeValue(
                   ($event.target as HTMLTextAreaElement)?.value,
@@ -87,7 +87,7 @@
               :disabled="lockLevel < 1"
             />
             <CollapsingShelf :show="focus == 'reputation-type'">
-              <p>Choose how other underscore factions see you.</p>
+              <p>Choose how other underworld factions see you.</p>
               <div class="text-list">
                 <button
                   class="btn btn--text"

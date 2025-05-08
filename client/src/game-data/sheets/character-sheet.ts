@@ -1606,7 +1606,7 @@ export class Ghost extends Character {
         id: 'ghost-form',
         name: 'Ghost Form',
         description:
-          "You are now a concentration of electroplasmic vapor which resembles your living body and clothes. You may weakly interact with the physical score and vice versa. You're vulnerable to arcane powers and electroplasmic effects. You move about by floating and may fly swiftly without tiring. You may slowly flow through small openings as a vapor. You chill the area around you and are terrifying for the living to behold. You are affected by spiritbane charms (take 2 drain to overcome the repulsion). Whenever you would take stress, take drain instead. When you would take trauma, take gloom instead.",
+          "You are now a concentration of electroplasmic vapor which resembles your living body and clothes. You may weakly interact with the physical world and vice versa. You're vulnerable to arcane powers and electroplasmic effects. You move about by floating and may fly swiftly without tiring. You may slowly flow through small openings as a vapor. You chill the area around you and are terrifying for the living to behold. You are affected by spiritbane charms (take 2 drain to overcome the repulsion). Whenever you would take stress, take drain instead. When you would take trauma, take gloom instead.",
         quantity: 1,
         maxQuantity: 1
       },
@@ -1630,7 +1630,7 @@ export class Ghost extends Character {
         id: 'poltergeist',
         name: 'Poltergeist',
         description:
-          'Take 1 drain to strongly interact with the physical score for a few moments (as if you had a normal body). Extend the reach and magnitude of your interaction to include telekinetic force and electroplasmic discharges by taking more drain (2-6).',
+          'Take 1 drain to strongly interact with the physical world for a few moments (as if you had a normal body). Extend the reach and magnitude of your interaction to include telekinetic force and electroplasmic discharges by taking more drain (2-6).',
         quantity: 0,
         maxQuantity: 1
       },

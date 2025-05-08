@@ -989,7 +989,7 @@ export class Cult extends Crew {
         id: 'glory-incarnate',
         name: 'Glory Incarnate',
         description:
-          'Your deity sometimes manifests in the physical score. This can be a great boon, but the priorities and values of a god are not those of mortals\n\nYou have been warned',
+          'Your deity sometimes manifests in the physical world. This can be a great boon, but the priorities and values of a god are not those of mortals\n\nYou have been warned',
         quantity: 0,
         maxQuantity: 1
       },

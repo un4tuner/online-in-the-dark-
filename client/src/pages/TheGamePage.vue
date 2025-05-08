@@ -6,12 +6,12 @@
           v-for="buttonSheet in [
             { name: 'crew', text: 'Crews' },
             { name: 'character', text: 'Characters' },
-            { name: 'score', text: 'Score'}
+            { name: 'world', text: 'World', disabled: true }
           ]"
           class="btn btn--tab"
           :class="{
             active: sheetType === buttonSheet.name,
-            //disabled: buttonSheet.disabled
+            disabled: buttonSheet.disabled
           }"
           @click="sheetType = buttonSheet.name"
         >
@@ -72,10 +72,6 @@
         :sheet="(currentSheet as Character)"
         v-if="currentSheet?.sheetType === 'character'"
       />
-      <TheScoreSheet
-        :sheet="(currentSheet as Score)"
-        v-if="currentSheet?.sheetType === 'score'"
-      />
     </div>
 
     <div class="sheet-select-layout" v-else>
@@ -90,7 +86,6 @@
           </div>
         </li>
       </ul>
-
       <ul class="sheet-list" v-else-if="sheetType === 'character'">
         <li v-for="sheet in (characterSheets as Character[])" :key="sheet.id">
           <SheetCard :sheet="sheet" @click="currentSheet = sheet" />
@@ -102,26 +97,19 @@
           </div>
         </li>
       </ul>
-
-      <ul class="sheet-list" v-else-if="sheetType === 'score'">
-        <li v-for="sheet in (scoreSheets as Score[])" :key="sheet.id">
-          <SheetCard :sheet="sheet" @click="currentSheet = sheet" />
-        </li>
-        <li>
-          <div class="new-sheet-card" @click="onClickNewSheet">
-            <i class="fas fa-folder-plus"></i>
-            <span>New {{ sheetType }}</span>
-          </div>
-        </li>
-      </ul>
-
       <PlayerBar class="mobile-hidden" />
     </div>
-
-
   </div>
 
-    <div class="model-overlay" v-if="showModelOverlay">
+  <!-- <button
+    class="btn btn--icon debug"
+    @click="showModelOverlay = true"
+    v-if="!showModelOverlay"
+  >
+    <i class="fas fa-cogs"></i>
+  </button> -->
+
+  <div class="model-overlay" v-if="showModelOverlay">
     <pre>{{ JSON.stringify(useGameStore().game, null, 2) }}</pre>
     <button class="btn debug btn" @click="showModelOverlay = false">
       Close
@@ -146,9 +134,6 @@ import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import TheCharacterSheet from './sheets/TheCharacterSheet.vue';
 import TheCrewSheet from './sheets/TheCrewSheet.vue';
-
-import TheScoreSheet from './sheets/TheScoreSheet.vue';
-import { Score } from '@/game-data/sheets/score-sheet';
 const route = useRoute();
 
 const isLoading = computed(() => !useGameStore().game?.codex);
@@ -160,8 +145,8 @@ const sheets = computed(() => {
 const sheetTypeDescription = computed(() => {
   const sheetTypeDescriptions = {
     crew: "Your crew type determines the scores that you'll focus on, as well as a selection of special abilities that support that kind of action.",
-    character: 'What kind of scoundrel are you? Each playbook has a unique set of special abilities and XP triggers to change how you play.',
-    score: 'Scores represent scenarios, locations, or specific challenges within the game.' // Added description for score
+    character:
+      'What kind of scoundrel are you? Each playbook has a unique set of special abilities and XP triggers to change how you play.'
   };
   return (
     sheetTypeDescriptions[
@@ -178,11 +163,7 @@ const characterSheets = computed(() => {
   return sheets.value.filter((sheet) => sheet.sheetType === 'character');
 });
 
-const scoreSheets = computed(() => {
-  return sheets.value.filter((sheet) => sheet.sheetType === 'score');
-});
-
-const currentSheet = ref(null as Crew | Character | Score | null);
+const currentSheet = ref(null as Crew | Character | null);
 
 const showModelOverlay = ref(false);
 
@@ -214,7 +195,7 @@ function onClickNewSheet() {
     sheetType: sheetType.value,
     description: sheetTypeDescription.value,
     templateTypeKey: sheetType.value + 'Type',
-    templates: createTemplates(sheetType.value), // This function needs to handle 'score'
+    templates: createTemplates(sheetType.value),
     onConfirm: createNewSheet
   });
 }
@@ -228,7 +209,7 @@ function createNewSheet(sheetType: string, sheet: Sheet) {
   });
 
   if (!useGameStore().game?.data?.sheets) {
-    // If there's no data yet, create an empty object for sheets
+    // If there's no data yet, create an empty array
     patch([
       {
         op: 'replace',
