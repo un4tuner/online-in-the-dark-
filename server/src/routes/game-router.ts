@@ -68,7 +68,7 @@ router.post(
       // Remove the user from the gamestate
       const gameIdToLeave = game._id.toString();
       const activeGame = await ActiveGame.activateGame(gameIdToLeave);
-      activeGame.removeUser(user._id);
+      activeGame.removeUser(user._id.toString());
       await activeGame.save();
 
       // Add game to user's list of games

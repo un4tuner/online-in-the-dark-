@@ -28,7 +28,7 @@ router.post(
       // Add the new user to the gamestate
       const gameId = gameModel._id.toString();
       const activeGame = await ActiveGame.activateGame(gameId);
-      await activeGame.addUser(user._id);
+      await activeGame.addUser(user._id.toString());
       await activeGame.save();
 
       // Add game to user's list of games

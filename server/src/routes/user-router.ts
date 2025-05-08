@@ -27,8 +27,8 @@ router.post('/create-guest', async (req, res) => {
     });
     await user.save();
     logger.info('Created guest account', { username });
-    const refreshToken = makeRefreshToken(user._id);
-    const accessToken = makeAccessToken(user._id);
+    const refreshToken = makeRefreshToken(user._id.toString());
+    const accessToken = makeAccessToken(user._id.toString());
     return res.status(HttpStatusCode.Ok).json({ refreshToken, accessToken });
   } catch (err) {
     logger.error('Error creating guest account', { error: err.message });
@@ -155,8 +155,8 @@ router.post('/login', async (req, res) => {
 
     logger.info('User logged in', { username });
     return res.status(HttpStatusCode.Ok).json({
-      refreshToken: makeRefreshToken(user._id),
-      accessToken: makeAccessToken(user._id)
+      refreshToken: makeRefreshToken(user._id.toString()),
+      accessToken: makeAccessToken(user._id.toString())
     });
   } catch (error) {
     logger.error('Error logging in', { error: error.message });
