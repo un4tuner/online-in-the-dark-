@@ -81,7 +81,7 @@
             </div>
 
             <CollapsingShelf :show="focus == 'alias'">
-              <p>What alias or nickname are you known by in the underworld?</p>
+              <p>What alias or nickname are you known by in the underscore?</p>
             </CollapsingShelf>
           </div>
 
