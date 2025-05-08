@@ -11,8 +11,6 @@ import { version } from '../version.json';
 
 export const origin = [
   'http://localhost:5173',
-  'http://87.186.23.128:5173',
-  'https://onlineinthedark.com'
 ];
 
 export default class RestServer {
