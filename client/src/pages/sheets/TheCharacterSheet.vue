@@ -773,7 +773,7 @@ import { useGameStore } from '@/stores/game-store';
 import { pick } from '@/util/rand-helper';
 import { text } from '@/util/string';
 import { computed, defineProps, onMounted, onUnmounted, ref, watch } from 'vue';
-import { resolveImageUrl } from '@/util/resolveImageUrl';
+import resolveImageUrl from '@/util/resolveImageUrl';
 
 const props = defineProps<{
   sheet: Character;

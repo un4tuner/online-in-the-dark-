@@ -224,7 +224,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { server } from '@/api/connection';
-import { resolveImageUrl } from '@/util/resolveImageUrl';
+import resolveImageUrl from '@/util/resolveImageUrl';
 
 const users = ref<any[]>([]);
 const games = ref<any[]>([]);

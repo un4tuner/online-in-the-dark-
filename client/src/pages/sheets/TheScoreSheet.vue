@@ -64,7 +64,7 @@ import { Score } from '@/game-data/sheets/score-sheet';
 import { Clock } from '@/game-data/game-data-types';
 import { ref, watch, computed, reactive } from 'vue';
 import { useGameStore } from '@/stores/game-store';
-import { resolveImageUrl } from '@/util/resolveImageUrl';
+import resolveImageUrl from '@/util/resolveImageUrl';
 
 const props = defineProps<{
   sheet: Score;

@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import sheetImages from '@/assets/data/sheet-images.json';
 import scoreImages from '@/assets/data/score-images.json';
-import { resolveImageUrl } from '@/util/resolveImageUrl';
+import resolveImageUrl from '@/util/resolveImageUrl';
 import { Character } from '@/game-data/sheets/character-sheet';
 import { Crew } from '@/game-data/sheets/crew-sheet';
 import { Score } from '@/game-data/sheets/score-sheet'; 
