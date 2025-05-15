@@ -50,13 +50,13 @@ import { ref, defineProps, onMounted } from 'vue';
 import { patch } from '@/controllers/game-controller';
 import type { World } from '@/game-data/sheets/world-sheet';
 import { resolveImageUrl } from '@/util/resolveImageUrl';
+import { BASE_URL } from '@/api/connection';
 
 const props = defineProps<{ sheet: World }>();
 const showBookPicker = ref(false);
 const bookLedger = ref<any[]>([]);
 const bookLedgerError = ref('');
 const bookPreview = ref<Record<string, string>>({});
-const BASE_URL = 'http://localhost:3005';
 
 function saveField(field: string, value: any) {
   patch([

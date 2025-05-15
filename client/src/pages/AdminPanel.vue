@@ -268,7 +268,7 @@ async function fetchUsers() {
   error.value = '';
   success.value = '';
   try {
-    const res = await server.get('http://localhost:3005/user/all-admin');
+    const res = await server.get('/user/all-admin');
     users.value = res.data;
   } catch (e: any) {
     error.value = 'Failed to load users: ' + (e && e.response && e.response.data ? e.response.data : e.message || e.toString());
@@ -279,7 +279,7 @@ async function fetchUsers() {
 
 async function fetchGames() {
   try {
-    const res = await server.get('http://localhost:3005/game/all');
+    const res = await server.get('/game/all');
     console.log('Fetched games:', res.data); // Debug log
     // If the response is { games: [...] }, use res.data.games
     if (Array.isArray(res.data)) {
@@ -308,7 +308,7 @@ async function changeRole(user: any, event: Event) {
   error.value = '';
   success.value = '';
   try {
-    await server.post('http://localhost:3005/user/promote-user', { userId: user._id, role });
+    await server.post('/user/promote-user', { userId: user._id, role });
     success.value = `User ${user.username} role changed to ${role}`;
     fetchUsers();
   } catch (e: any) {
@@ -322,7 +322,7 @@ async function resetPassword(user: any) {
   error.value = '';
   success.value = '';
   try {
-    await server.post('http://localhost:3005/user/reset-password', { userId: user._id, newPassword });
+    await server.post('/user/reset-password', { userId: user._id, newPassword });
     success.value = `Password reset for ${user.username}`;
   } catch (e: any) {
     error.value = 'Failed to reset password: ' + (e && e.response && e.response.data ? e.response.data : e.message || e.toString());
@@ -352,7 +352,7 @@ async function addGM(game: any, userId: string) {
   error.value = '';
   success.value = '';
   try {
-    await server.post('http://localhost:3005/game/add-gm', { gameId: game._id, gmId: userId });
+    await server.post('/game/add-gm', { gameId: game._id, gmId: userId });
     success.value = `Added GM to game ${game.name}`;
     selectedMaster.value[game._id] = '';
     fetchGames();
@@ -368,7 +368,7 @@ async function removeGM(game: any, userId: string) {
   if (!user) return;
   if (!confirm(`Remove ${user.username} as a GM from game ${game.name}?`)) return;
   try {
-    await server.post('http://localhost:3005/game/remove-gm', { gameId: game._id, gmId: userId });
+    await server.post('/game/remove-gm', { gameId: game._id, gmId: userId });
     success.value = `Removed GM from game ${game.name}`;
     fetchGames();
   } catch (e: any) {
@@ -383,9 +383,9 @@ async function removePlayerEverywhere(game: any, playerId: string) {
   error.value = '';
   success.value = '';
   try {
-    await server.post(`http://localhost:3005/game/${game._id}/remove-player`, { playerId });
+    await server.post(`/game/${game._id}/remove-player`, { playerId });
     if (user) {
-      await server.post(`http://localhost:3005/user/${user._id}/remove-game`, { gameId: game._id });
+      await server.post(`/user/${user._id}/remove-game`, { gameId: game._id });
     }
     success.value = `Player '${username}' removed from game '${game.name}'`;
     fetchGames();
@@ -400,7 +400,7 @@ async function deleteUser(user: any) {
   error.value = '';
   success.value = '';
   try {
-    await server.delete(`http://localhost:3005/user/${user._id}`);
+    await server.delete(`/user/${user._id}`);
     success.value = `User ${user.username} deleted`;
     fetchUsers();
   } catch (e: any) {
@@ -413,7 +413,7 @@ async function deleteGame(game: any) {
   error.value = '';
   success.value = '';
   try {
-    await server.delete(`http://localhost:3005/game/${game._id}`);
+    await server.delete(`/game/${game._id}`);
     success.value = `Game '${game.name}' deleted`;
     fetchGames();
   } catch (e: any) {
@@ -427,7 +427,7 @@ async function removeGameFromUser(user: any, gameId: string) {
   error.value = '';
   success.value = '';
   try {
-    await server.post(`http://localhost:3005/user/${user._id}/remove-game`, { gameId });
+    await server.post(`/user/${user._id}/remove-game`, { gameId });
     success.value = `Game removed from user '${user.username}'`;
     fetchUsers();
   } catch (e: any) {
