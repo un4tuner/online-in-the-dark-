@@ -890,7 +890,7 @@ import { PlayerRole } from '@/types/game';
 import { pick } from '@/util/rand-helper';
 import { text } from '@/util/string';
 import { computed, defineProps, onMounted, onUnmounted, ref, watch } from 'vue';
-import { resolveImageUrl } from '@/util/resolveImageUrl';
+import resolveImageUrl from '@/util/resolveImageUrl';
 
 const WIDE_TILE_DESCRIPTION_THRESHOLD = 200;
 const codex = useGameStore().game?.codex;
