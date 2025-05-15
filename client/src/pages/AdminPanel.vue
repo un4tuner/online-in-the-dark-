@@ -330,12 +330,12 @@ async function resetPassword(user: any) {
 }
 
 function masterName(masterId: string) {
-  const user = users.value.find(u => u._id === masterId);
+  const user = (Array.isArray(users.value) ? users.value : []).find(u => u._id === masterId);
   return user ? user.username : '';
 }
 
 function usersNotInGMs(game: any) {
-  return users.value.filter(u => !(game.gms || []).includes(u._id));
+  return (Array.isArray(users.value) ? users.value : []).filter(u => !(game.gms || []).includes(u._id));
 }
 
 function confirmAddGM(game: any) {

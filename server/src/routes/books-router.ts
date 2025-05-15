@@ -27,9 +27,9 @@ router.post('/upload', uploadBooks.single('file'), (req: Request & { file?: Mult
 });
 
 router.get('/list', (req, res) => {
-  const dir = path.join(__dirname, '../../Books');
-  fs.readdir(dir, (err, files) => {
-    if (err) return res.status(500).json({ error: 'Failed to list books' });
+  const booksDir = path.join(__dirname, '../../Books');
+  fs.readdir(booksDir, (err, files) => {
+    if (err) return res.json({ files: [] });
     res.json({ files });
   });
 });
