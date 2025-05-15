@@ -1,0 +1,21 @@
+[
+  { "type": "Heist", "image": "/images/score-images/heist.jpg", "color": "#1a237e" },
+  { "type": "Assassination", "image": "/images/score-images/assassination.jpg", "color": "#b71c1c" },
+  { "type": "Murder", "image": "/images/score-images/murder.jpg", "color": "#b71c1c" },
+  { "type": "Whackjob", "image": "/images/score-images/whackjob.jpg", "color": "#b71c1c" },
+  { "type": "Smuggling", "image": "/images/score-images/smuggling.jpg", "color": "#4e342e" },
+  { "type": "Extortion", "image": "/images/score-images/extortion.jpg", "color": "#37474f" },
+  { "type": "Sabotage", "image": "/images/score-images/sabotage.jpg", "color": "#263238" },
+  { "type": "Acquisition", "image": "/images/score-images/acquisition.jpg", "color": "#00695c" },
+  { "type": "Espionage", "image": "/images/score-images/espionage.jpg", "color": "#283593" },
+  { "type": "Destroy", "image": "/images/score-images/destroy.jpg", "color": "#212121" },
+  { "type": "Raid", "image": "/images/score-images/raid.jpg", "color": "#1565c0" },
+  { "type": "Ransom", "image": "/images/score-images/ransom.jpg", "color": "#6d4c41" },
+  { "type": "Socialize", "image": "/images/score-images/socialize.jpg", "color": "#ad1457" },
+  { "type": "Surveillance", "image": "/images/score-images/surveillance.jpg", "color": "#00838f" },
+  { "type": "Delivery", "image": "/images/score-images/delivery.jpg", "color": "#558b2f" },
+  { "type": "Mystic", "image": "/images/score-images/mystic.jpg", "color": "#558b2f" },
+  { "type": "Chase", "image": "/images/score-images/chase.jpg", "color": "#558b2f" },
+  { "type": "Escape", "image": "/images/score-images/escape.jpg", "color": "#558b2f" },
+  { "type": "Cleanup", "image": "/images/score-images/cleanup.jpg", "color": "#558b2f" }
+] 

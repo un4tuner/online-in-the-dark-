@@ -14,7 +14,7 @@
               backgroundColor: getSheetImage(sheet.image)?.commonColor
             }"
           >
-            <img :src="getSheetImage(sheet.image)?.url" />
+            <img :src="getSheetImage(sheet.image)?.url || resolveImageUrl(sheet.image)" />
             <h1
               :class="{
                 'extra-long': sheet.name
@@ -773,6 +773,7 @@ import { useGameStore } from '@/stores/game-store';
 import { pick } from '@/util/rand-helper';
 import { text } from '@/util/string';
 import { computed, defineProps, onMounted, onUnmounted, ref, watch } from 'vue';
+import { resolveImageUrl } from '@/util/resolveImageUrl';
 
 const props = defineProps<{
   sheet: Character;

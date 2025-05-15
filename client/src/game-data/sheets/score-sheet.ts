@@ -14,6 +14,9 @@ export class Score extends Sheet {
   name: string = 'New Score';
   notes: string = 'These are default notes.';
   scoreType: string = ''; // The type of score this is (e.g. score, world, etc.)
+  crewId: string | null = null;
+  scoreNotes: string = '';
+  additionalSections: { header: string; text: string }[] = [];
    
 
 //  contacts: Person[] = [];
@@ -22,7 +25,7 @@ export class Score extends Sheet {
   //stress: number = 0; // 0-9
   //maxStress: number = 9;
 
-  tierLevel: number = 0;
+  tierLevel: number = 1;
 
   progressClock: Clock = {
     id: 'progress',
@@ -33,11 +36,14 @@ export class Score extends Sheet {
     value: 0
   };
 
+  // New: support for multiple clocks
+  clocks: Clock[] = [];
 
   constructor() {
     super();
     this.sheetType = 'score';
-    
+    // Initialize clocks with the default progressClock
+    this.clocks = [this.progressClock];
   }
 }
 

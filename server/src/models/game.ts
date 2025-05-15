@@ -23,6 +23,10 @@ export type Game = {
 
   players: Record<string, Player>;
 
+  gms: string[];
+
+  lastActive: Date;
+
   data: any;
 
   codex: any;
@@ -37,6 +41,10 @@ const GameSchema = new Schema<GameDocument>({
   inviteCode: { type: String, required: true },
 
   players: { type: Object, required: true },
+
+  gms: { type: [String], required: true, default: [] },
+
+  lastActive: { type: Date, required: true, default: Date.now },
 
   data: { type: Object, required: false },
 

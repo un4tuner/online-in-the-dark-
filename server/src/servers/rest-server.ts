@@ -8,9 +8,13 @@ import gameRouter from '../routes/game-router';
 import inviteRouter from '../routes/invite-router';
 import userRouter from '../routes/user-router';
 import { version } from '../version.json';
+import path from 'path';
+import booksRouter from '../routes/books-router';
+import imagesRouter from '../routes/images-router';
 
 export const origin = [
   'http://localhost:5173',
+  'http://localhost:4173',
 ];
 
 export default class RestServer {
@@ -26,7 +30,7 @@ export default class RestServer {
 
     this.app.use(
       cors({
-        origin,
+        origin: true,
         credentials: true
       })
     );
@@ -40,6 +44,20 @@ export default class RestServer {
     this.app.use('/auth', authRouter);
     this.app.use('/game', gameRouter);
     this.app.use('/invite', inviteRouter);
+
+    // Mount API routers BEFORE static middleware
+    this.app.use('/images', imagesRouter);
+    this.app.use('/books', booksRouter);
+
+    // Static serving (must come after routers)
+    this.app.use('/images', express.static(path.join(__dirname, '../../Images')));
+    this.app.use('/books', express.static(path.join(__dirname, '../../Books')));
+
+    // Serve static files from the client/dist directory
+    this.app.use(express.static(path.join(__dirname, '../../../client/dist')));
+    this.app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, '../../../client/dist', 'index.html'));
+    });
   }
 
   static getInstance() {

@@ -11,6 +11,7 @@ import { useUserStore } from '@/stores/user-store';
 import { ref } from 'vue';
 import { RouterOptions, createRouter, createWebHistory } from 'vue-router';
 import TheGamePage from '../pages/TheGamePage.vue';
+import AdminPanel from '@/pages/AdminPanel.vue';
 
 export const currentPageName = ref();
 export enum PageName {
@@ -38,11 +39,32 @@ const routes = [
     name: PageName.GAME
   },
   {
+    path: '/game/:gameId/character/:sheetId',
+    components: {
+      page: TheGamePage
+    },
+    name: 'game-character-sheet'
+  },
+  {
+    path: '/game/:gameId/crew/:sheetId',
+    components: {
+      page: TheGamePage
+    },
+    name: 'game-crew-sheet'
+  },
+  {
     path: '/invite/:code',
     components: {
       page: TheInvitePage
     },
     name: PageName.INVITE
+  },
+  {
+    path: '/admin',
+    components: {
+      page: AdminPanel
+    },
+    name: 'admin'
   },
   {
     path: '/:pathMatch(.*)*',
@@ -80,8 +102,13 @@ router.beforeEach(async (to, from, next) => {
 
   ModalController.close();
 
-  // if (useUserStore().isGuest && !from.name)
-  //   ModalController.open(GuestReminderModal);
+  // Protect /admin route for superuser only
+  if (to.path === '/admin') {
+    const userStore = useUserStore();
+    if (userStore.username !== 'Administrator') {
+      return next({ path: '/' });
+    }
+  }
 
   currentPageName.value = to.name;
 

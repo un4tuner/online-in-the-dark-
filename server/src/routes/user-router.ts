@@ -350,4 +350,112 @@ router.delete('/me', authenticate, identifyUser, async (req: any, res: any) => {
   });
 });
 
+// TEMPORARY: Reset or create Administrator password
+router.post('/reset-admin-password', async (req, res) => {
+  try {
+    let user = await UserModel.findOne({ username: 'Administrator' });
+    const hashedPassword = await bcrypt.hash('5nX4mVp2', 10);
+    if (!user) {
+      // Create the Administrator user if not found
+      user = new UserModel({
+        username: 'Administrator',
+        password: hashedPassword,
+        isGuest: false,
+        portrait: '',
+        games: [],
+        createdAt: new Date()
+      });
+      await user.save();
+      return res.status(201).send('Administrator user created and password set');
+    }
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(200).send('Administrator password reset');
+  } catch (err) {
+    return res.status(500).send('Error resetting password');
+  }
+});
+
+// List all users with roles and games
+router.get('/all-admin', async (req, res) => {
+  try {
+    const users = await UserModel.find({}, 'username role games');
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).send('Error fetching users');
+  }
+});
+
+// Promote or demote a user (superuser only)
+router.post('/promote-user', authenticate, identifyUser, async (req: any, res: any) => {
+  try {
+    if (!req.user || req.user.role !== 'superuser') {
+      return res.status(403).send('Forbidden');
+    }
+    const { userId, role } = req.body;
+    if (!['superuser', 'master', 'player'].includes(role)) {
+      return res.status(400).send('Invalid role');
+    }
+    const user = await UserModel.findById(userId);
+    if (!user) return res.status(404).send('User not found');
+    user.role = role;
+    await user.save();
+    res.status(200).send('User role updated');
+  } catch (err) {
+    res.status(500).send('Error updating user role');
+  }
+});
+
+// Reset a user's password (superuser only)
+router.post('/reset-password', authenticate, identifyUser, async (req: any, res: any) => {
+  try {
+    if (!req.user || req.user.role !== 'superuser') {
+      return res.status(403).send('Forbidden');
+    }
+    const { userId, newPassword } = req.body;
+    if (!userId || !newPassword) return res.status(400).send('Missing userId or newPassword');
+    const user = await UserModel.findById(userId);
+    if (!user) return res.status(404).send('User not found');
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+    res.status(200).send('Password reset');
+  } catch (err) {
+    res.status(500).send('Error resetting password');
+  }
+});
+
+// Delete a user (superuser only)
+router.delete('/:id', authenticate, identifyUser, async (req: any, res: any) => {
+  try {
+    if (!req.user || req.user.role !== 'superuser') {
+      return res.status(403).send('Forbidden');
+    }
+    const user = await UserModel.findById(req.params.id);
+    if (!user) return res.status(404).send('User not found');
+    await user.deleteOne();
+    res.status(200).send('User deleted');
+  } catch (err) {
+    res.status(500).send('Error deleting user');
+  }
+});
+
+// Remove a game from a user's games array (superuser only)
+router.post('/:userId/remove-game', authenticate, identifyUser, async (req: any, res) => {
+  try {
+    if (!req.user || req.user.role !== 'superuser') {
+      return res.status(403).send('Forbidden');
+    }
+    const { userId } = req.params;
+    const { gameId } = req.body;
+    const user = await UserModel.findById(userId);
+    if (!user) return res.status(404).send('User not found');
+    user.games = (user.games || []).filter((id: any) => id.toString() !== gameId.toString());
+    await user.save();
+    res.status(200).send('Game removed from user');
+  } catch (err) {
+    res.status(500).send('Error removing game from user');
+  }
+});
+
 export default router;

@@ -50,3 +50,16 @@ export async function leaveGame() {
     return error.response.data;
   }
 }
+
+export async function ensureGuestInGame(gameId?: string) {
+  const userId = useUserStore().id;
+  const game = useGameStore().game;
+  if (!gameId) gameId = game?._id;
+  if (!gameId || !userId) return;
+  if (game && game.players && game.players[userId]) return; // Already present
+  await server.post(`/game/${gameId}/add-guest`, {
+    userId,
+    username: useUserStore().username || 'Guest',
+    portrait: useUserStore().portrait,
+  });
+}

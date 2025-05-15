@@ -60,13 +60,17 @@ function incrementClock() {
     position: absolute;
     height: 8rem;
     width: 8rem;
-    transform: scale(1);
-    transition: transform 0.3s;
     cursor: pointer;
   }
+}
 
-  &:active > .slice {
-    transform: scale(0.9);
-  }
+h2 {
+  margin-bottom: 0.2rem;
+}
+
+p {
+  color: #888;
+  font-size: 0.95em;
+  margin-top: 0.2rem;
 }
 </style>

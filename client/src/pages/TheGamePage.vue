@@ -1,12 +1,28 @@
 <template>
   <div class="page">
+    <TheNavigation>
+      <template #after-logo>
+        <button class="btn btn--icon btn--back" @click="$router.push('/')">
+          <i class="fas fa-arrow-left"></i>
+          <span class="mobile-hidden">Games</span>
+        </button>
+      </template>
+      <template #after-settings>
+        <button class="btn btn--icon btn--admin" @click="$router.push('/admin')">
+          <i class="fas fa-cog"></i>
+          <span class="mobile-hidden">Admin</span>
+        </button>
+      </template>
+    </TheNavigation>
+    <div v-if="sheetNotFound" class="error" style="padding:2rem; text-align:center; font-size:1.2rem;">Sheet not found.</div>
     <div class="controls">
       <div class="row center" v-if="!currentSheet">
         <button
           v-for="buttonSheet in [
             { name: 'crew', text: 'Crews' },
             { name: 'character', text: 'Characters' },
-            { name: 'score', text: 'Score'}
+            { name: 'score', text: 'Score'},
+            { name: 'world', text: 'World'}
           ]"
           class="btn btn--tab"
           :class="{
@@ -76,6 +92,14 @@
         :sheet="(currentSheet as Score)"
         v-if="currentSheet?.sheetType === 'score'"
       />
+      <TheBookSheet
+        :sheet="currentSheet as World"
+        v-if="currentSheet?.sheetType === 'world' && (currentSheet as World)?.worldType === 'book'"
+      />
+      <TheIllustrationSheet
+        :sheet="currentSheet as World"
+        v-if="currentSheet?.sheetType === 'world' && (currentSheet as World)?.worldType === 'illustration'"
+      />
     </div>
 
     <div class="sheet-select-layout" v-else>
@@ -115,17 +139,42 @@
         </li>
       </ul>
 
+      <ul class="sheet-list" v-else-if="sheetType === 'world'">
+        <li v-for="sheet in (worldSheets as any[])" :key="sheet.id">
+          <SheetCard :sheet="sheet" @click="currentSheet = sheet" />
+        </li>
+        <li>
+          <div class="new-sheet-card" @click="onClickNewWorldSheet">
+            <i class="fas fa-folder-plus"></i>
+            <span>New World Sheet</span>
+          </div>
+        </li>
+      </ul>
+
       <PlayerBar class="mobile-hidden" />
     </div>
 
-
-  </div>
+    <div v-if="showWorldTypeModal" class="modal-overlay">
+      <div class="modal world-type-modal">
+        <h2>New World Sheet</h2>
+        <div class="world-type-btns">
+          <button class="btn btn--tab" @click="createWorldSheetAndClose('illustration')">
+            <span>Illustration</span>
+          </button>
+          <button class="btn btn--tab" @click="createWorldSheetAndClose('book')">
+            <span>Book</span>
+          </button>
+        </div>
+        <button class="btn" @click="showWorldTypeModal = false">Cancel</button>
+      </div>
+    </div>
 
     <div class="model-overlay" v-if="showModelOverlay">
     <pre>{{ JSON.stringify(useGameStore().game, null, 2) }}</pre>
     <button class="btn debug btn" @click="showModelOverlay = false">
       Close
     </button>
+  </div>
   </div>
 </template>
 
@@ -142,13 +191,16 @@ import Sheet from '@/game-data/sheets/sheet';
 import { createTemplates } from '@/game-data/sheets/sheet-util';
 import { useGameStore } from '@/stores/game-store';
 import mixpanel from 'mixpanel-browser';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import TheCharacterSheet from './sheets/TheCharacterSheet.vue';
 import TheCrewSheet from './sheets/TheCrewSheet.vue';
 
 import TheScoreSheet from './sheets/TheScoreSheet.vue';
 import { Score } from '@/game-data/sheets/score-sheet';
+import TheBookSheet from './sheets/TheBookSheet.vue';
+import TheIllustrationSheet from './sheets/TheIllustrationSheet.vue';
+import { World } from '@/game-data/sheets/world-sheet';
 const route = useRoute();
 
 const isLoading = computed(() => !useGameStore().game?.codex);
@@ -182,14 +234,53 @@ const scoreSheets = computed(() => {
   return sheets.value.filter((sheet) => sheet.sheetType === 'score');
 });
 
-const currentSheet = ref(null as Crew | Character | Score | null);
+const worldSheets = computed(() => {
+  return sheets.value.filter((sheet) => sheet.sheetType === 'world');
+});
+
+const currentSheet = ref(null as Crew | Character | Score | World | null);
 
 const showModelOverlay = ref(false);
+const sheetNotFound = ref(false);
+const showWorldTypeModal = ref(false);
 
 onMounted(() => {
-  const gameId = route.params.id as string;
+  const gameId = route.params.id as string || route.params.gameId as string;
   connectToGame(gameId);
+  trySelectSheetFromRoute();
 });
+
+watch([
+  () => route.fullPath,
+  () => useGameStore().game?.data?.sheets
+], () => {
+  trySelectSheetFromRoute();
+});
+
+function trySelectSheetFromRoute() {
+  const sheetId = route.params.sheetId as string;
+  const game = useGameStore().game;
+  if (sheetId) {
+    if (game && game.data && game.data.sheets) {
+      const sheets = game.data.sheets;
+      const sheet = sheets && sheets[sheetId];
+      if (sheet) {
+        currentSheet.value = sheet;
+        sheetType.value = sheet.sheetType;
+        sheetNotFound.value = false;
+      } else {
+        currentSheet.value = null;
+        sheetNotFound.value = true;
+      }
+    } else {
+      currentSheet.value = null;
+      sheetNotFound.value = false;
+    }
+  } else {
+    currentSheet.value = null;
+    sheetNotFound.value = false;
+  }
+}
 
 const showNotes = ref(false);
 function onClickNotes() {
@@ -266,6 +357,31 @@ function onClickDeleteSheet() {
       ModalController.close();
     }
   });
+}
+
+function onClickNewWorldSheet() {
+  showWorldTypeModal.value = true;
+}
+
+function createWorldSheetAndClose(type: 'book' | 'illustration') {
+  showWorldTypeModal.value = false;
+  createNewWorldSheet(type);
+}
+
+function createNewWorldSheet(type: 'book' | 'illustration') {
+  // Create a new World sheet with the chosen type
+  const newSheet = new World();
+  newSheet.worldType = type;
+  newSheet.name = '';
+  // Add to game store (patch or mutation as appropriate)
+  patch([
+    {
+      op: 'add',
+      path: `/data/sheets/${newSheet.id}`,
+      value: newSheet,
+    },
+  ]);
+  currentSheet.value = newSheet;
 }
 </script>
 
@@ -472,5 +588,67 @@ h2.breadcrumbs {
 }
 
 @media (max-width: 768px) {
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.modal.world-type-modal {
+  background: #fff;
+  padding: 2.5rem 2.5rem 2rem 2.5rem;
+  border-radius: 12px;
+  min-width: 320px;
+  max-width: 90vw;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  background-image: url('/images/parchment-default.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  position: relative;
+}
+.modal.world-type-modal > * {
+  position: relative;
+  z-index: 1;
+}
+.modal.world-type-modal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.7);
+  border-radius: 12px;
+  z-index: 0;
+}
+.world-type-btns {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+.world-type-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  background: #f7f7f7;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  padding: 1.2rem 2.2rem;
+  cursor: pointer;
+  transition: border 0.2s, background 0.2s;
+}
+.world-type-btn:hover {
+  border: 2px solid #1976d2;
+  background: #e3eaff;
 }
 </style>

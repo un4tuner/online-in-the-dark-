@@ -13,6 +13,9 @@
       >
         <i class="fas fa-cog"></i>
       </button>
+      <button class="btn btn--icon admin-panel" @click="$router.push('/admin')">
+        <i class="fas fa-user-shield"></i>
+      </button>
       <button class="btn btn--account" @click="onClickAccount">
         <Portrait :portraitId="useUserStore().portrait" />
         <span>{{ useUserStore().username || 'Account' }}</span>
@@ -79,6 +82,12 @@ button.btn.btn--account {
   > span {
     font-size: 1.2rem;
   }
+}
+
+button.btn.admin-panel {
+  margin-left: 0.5rem;
+  color: var(--primary);
+  background: var(--translucent-light);
 }
 
 @media (max-width: 768px) {

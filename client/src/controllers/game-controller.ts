@@ -1,4 +1,4 @@
-import { BASE_URL, server } from '@/api/connection';
+import { BASE_URL, server, ensureValidAccessToken } from '@/api/connection';
 import LoadingModal from '@/components/modals/modal-content/LoadingModal.vue';
 import { useGameStore } from '@/stores/game-store';
 import { useTokenStore } from '@/stores/token-store';
@@ -7,6 +7,7 @@ import { Operation, applyPatch } from 'fast-json-patch';
 import { Socket, io } from 'socket.io-client';
 import ModalController from './modal-controller';
 import InfoModal from '@/components/modals/modal-content/InfoModal.vue';
+import { ensureGuestInGame } from '@/api/games';
 
 export enum SocketMessageType {
   PATCH = 'patch'
@@ -25,7 +26,7 @@ export function connectToGame(gameId: string) {
   const socketOptions = {
     query: {
       gameId,
-      token: useTokenStore().refreshToken
+      token: useTokenStore().accessToken
     }
   };
 
@@ -86,6 +87,10 @@ function onError(error: any) {
 }
 
 export async function patch(patches: Operation[]) {
+  // Ensure guest is in game before sending patch
+  await ensureGuestInGame();
+  // Ensure a valid access token is present
+  await ensureValidAccessToken();
   // Send a patch by rest request
   await server.patch(`/game/${useGameStore().game?._id}`, patches);
 }

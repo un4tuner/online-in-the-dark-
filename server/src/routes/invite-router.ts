@@ -32,8 +32,10 @@ router.post(
       await activeGame.save();
 
       // Add game to user's list of games
-      user.games.push(gameId);
-      await user.save();
+      if (!user.games.map(id => id.toString()).includes(gameId)) {
+        user.games.push(gameId);
+        await user.save();
+      }
 
       return res.status(HttpStatusCode.Ok).json({ gameId });
     } catch (err) {

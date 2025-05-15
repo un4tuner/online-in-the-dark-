@@ -82,12 +82,26 @@ export class ActiveGame {
 
   public applyPatchesAndBroadcast(patches: Operation[]) {
     try {
+      // Auto-create player if missing for any /players/{userId}/... patch
+      patches.forEach((patch) => {
+        const match = patch.path.match(/^\/players\/([^/]+)/);
+        if (match) {
+          const userId = match[1];
+          if (!this.state.players[userId]) {
+            this.state.players[userId] = {
+              username: 'Guest',
+              portrait: '',
+              isGuest: true,
+              isOnline: true,
+              role: PlayerRole.PLAYER
+            };
+          }
+        }
+      });
       logger.info('Applying patches', {
         patches: patches.map((patch) => `[${patch.op}] ${patch.path}`)
       });
-
       this.state = applyPatch(this.state, patches).newDocument;
-
       IOServer.getInstance().broadcast(this.gameId, {
         type: 'patch',
         patches
@@ -133,13 +147,22 @@ export class ActiveGame {
   public async save() {
     try {
       const gameModel = await GameModel.findById({ _id: this.gameId });
-      gameModel.set(this.state);
+      // Only set allowed fields
+      const allowedFields = [
+        'name', 'coverImage', 'dateCreated', 'inviteCode', 'players',
+        'gms', 'lastActive', 'data', 'codex'
+      ];
+      for (const key of allowedFields) {
+        if (this.state[key] !== undefined) {
+          gameModel.set(key, this.state[key]);
+        }
+      }
       await gameModel.save();
       // logger.info('Game saved to MongoDB', { gameId: this.gameId });
     } catch (error) {
       logger.error(`Error saving game to database`, {
         gameId: this.gameId,
-        error
+        error: error.message || error
       });
     }
   }

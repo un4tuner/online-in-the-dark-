@@ -20,6 +20,19 @@ export const server = axios.create({
   }
 });
 
+export async function ensureValidAccessToken() {
+  const tokenStore = useTokenStore();
+  if (!tokenStore.accessToken) {
+    if (tokenStore.refreshToken) {
+      await fetchAccessToken();
+    } else {
+      // No refresh token, force logout
+      logout();
+      throw new Error('No refresh token found. User must log in.');
+    }
+  }
+}
+
 export function initializeConnection() {
   addInterceptors();
 }
@@ -67,9 +80,7 @@ export function addInterceptors() {
         // This is done by returning the server call with the original config
         // Add the new access token to the Authorization header
         const config = error.config;
-        config.headers['Authorization'] = `Bearer ${
-          useTokenStore().accessToken
-        }`;
+        config.headers['Authorization'] = `Bearer ${useTokenStore().accessToken}`;
         return server(config);
       }
 

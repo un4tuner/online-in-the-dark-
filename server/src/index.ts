@@ -7,6 +7,10 @@ import { GameModel } from './models/game';
 import { UserModel } from './models/user';
 import { IOServer } from './servers/io-server';
 import RestServer from './servers/rest-server';
+import userRouter from './routes/user-router';
+import cron from 'node-cron';
+import booksRouter from './routes/books-router';
+import imagesRouter from './routes/images-router';
 
 initialize();
 
@@ -39,6 +43,15 @@ async function initialize() {
   cleanupGuests();
   setInterval(cleanupGuests, 1000 * 60 * 60); // Run every hour
 
+  // Scheduled job: delete games after 90 days of inactivity
+  cron.schedule('0 0 * * *', async () => { // every day at midnight
+    const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
+    const result = await GameModel.deleteMany({ lastActive: { $lt: cutoff } });
+    if (result.deletedCount > 0) {
+      logger.info(`Deleted ${result.deletedCount} inactive games (90+ days)`);
+    }
+  });
+
   // Start REST server
   const restServer = RestServer.getInstance();
   const app = restServer.getApp();
@@ -47,6 +60,10 @@ async function initialize() {
   const ioServer = IOServer.getInstance();
   const server = createServer(app);
   ioServer.start(server);
+
+  app.use('/user', userRouter);
+  app.use('/books', booksRouter);
+  app.use('/images', imagesRouter);
 
   const port = process.env.PORT || 3005;
   server.listen(port, () => {
