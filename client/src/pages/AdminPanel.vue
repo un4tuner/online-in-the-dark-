@@ -94,7 +94,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr v-for="user in users.filter(u => (game.players && game.players[u._id]) || (game.gms && game.gms.includes(u._id)))" :key="'user-' + user._id">
+                      <tr v-for="user in (Array.isArray(users) ? users : []).filter(u => (game.players && game.players[u._id]) || (game.gms && game.gms.includes(u._id)))" :key="'user-' + user._id">
                         <td>{{ user.username }}</td>
                         <td>
                           <span v-if="game.gms && game.gms.includes(user._id)">GM</span>
@@ -148,7 +148,7 @@
               <td>
                 <span v-if="game.gms && game.gms.length">
                   <span v-for="(gmId, idx) in game.gms" :key="gmId">
-                    {{ (users.find(u => u._id === gmId) || { username: gmId }).username }}<span v-if="idx < game.gms.length - 1">, </span>
+                    {{ (Array.isArray(users) ? users : []).find(u => u._id === gmId) || { username: gmId }).username }}<span v-if="idx < game.gms.length - 1">, </span>
                   </span>
                 </span>
                 <span v-else>-</span>
